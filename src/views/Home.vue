@@ -1,5 +1,6 @@
 <script setup lang="ts"></script>
-
 <template>
-    <main></main>
+    <div>
+        <h1>Chào mừng</h1>
+    </div>
 </template>
