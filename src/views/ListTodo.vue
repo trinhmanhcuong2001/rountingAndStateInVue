@@ -1,21 +1,31 @@
 <script lang="ts" setup>
-import { computed, ref } from "vue";
+import { computed, reactive } from "vue";
 import { useStore } from "vuex";
 import { RouterLink } from "vue-router";
-// import type { Todo } from "@/store";
-import { Edit, Delete } from "@element-plus/icons-vue";
-// import UpdateTodo from "@/components/UpdateTodo.vue";
+import { View, Edit, Delete } from "@element-plus/icons-vue";
+import ViewTodo from "./ViewTodo.vue";
+import type { Todo } from "@/store";
 
 const store = useStore();
 
 const tableData = computed(() => store.state.todo_list);
 
-// const dataEdit = ref<Todo>();
-// const handleSentDataEdit = (data: Todo) => {
-//     dataEdit.value = data;
-//     console.log(dataEdit.value);
-// };
+const data = reactive({ show: false });
 
+const dataEdit = reactive<Todo>({
+    id: 0,
+    name: "",
+    completed: false,
+});
+
+const showActive = (dataSent: Todo) => {
+    data.show = !data.show;
+    if (data.show) {
+        dataEdit.id = dataSent.id;
+        dataEdit.name = dataSent.name;
+        dataEdit.completed = dataSent.completed;
+    }
+};
 const deleteTodo = (id: number) => {
     store.dispatch("deleteTodo", id);
 };
@@ -32,6 +42,12 @@ const deleteTodo = (id: number) => {
         </el-table-column>
         <el-table-column label="Tính năng">
             <template #default="{ row }">
+                <el-icon
+                    :size="20"
+                    style="margin-right: 8px"
+                    @click="showActive(row)"
+                    ><View
+                /></el-icon>
                 <RouterLink :to="'/edit-todo/' + row.id">
                     <el-icon :size="20" style="margin-right: 8px" color="blue">
                         <Edit /> </el-icon
@@ -42,5 +58,10 @@ const deleteTodo = (id: number) => {
             </template>
         </el-table-column>
     </el-table>
-    <!-- <update-todo :dataEdit="dataEdit" /> -->
+    <ViewTodo
+        v-model="data.show"
+        :show="data.show"
+        @update-show="showActive"
+        :dataEdit="dataEdit"
+    />
 </template>
